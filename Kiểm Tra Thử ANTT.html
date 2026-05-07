@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Kiểm Tra Thử ANTT</title>
+
+<style>
+body{font-family:Arial;max-width:1000px;margin:auto;padding:20px;background:#f5f7fb}
+.card{background:#fff;padding:15px;margin:10px 0;border-radius:10px}
+.correct{background:#dcfce7}
+.wrong{background:#fee2e2}
+.top{display:flex;justify-content:space-between}
+button{padding:8px 12px;background:#2563eb;color:#fff;border:none;border-radius:6px;margin-left:5px}
+.timer{font-weight:bold}
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+
+<h2>KIỂM TRA  THỬ  ANTT GIỎI 2026 CÔNG AN XÃ VĨNH HƯNG
+  (86 CÂU)</h2>
+
+<div class="top">
+<div class="timer" id="timer">60:00</div>
+<div>
+<button onclick="submitQuiz()">Nộp bài</button>
+<button onclick="showAnswers()">Xem đáp án</button>
+<button onclick="showWrong()">Câu sai</button>
+<button onclick="location.reload()">Làm lại</button>
+</div>
+</div>
+
+<form id="quiz"></form>
+<h3 id="result"></h3>
+
+<script>
+
+// ===== ĐÁP ÁN =====
+const answers = [
+'a','b','a','b','c','b','b','a','d','b',
+'a','b','b','d','d','d','c','b','d','b',
+'c','b','d','b','b','d','b','a','d','c',
+'d','a','b','c','b','a','c','a','d','b',
+'c','d','c','c','b','b','d','c','c',
+'d','c','a','b','c','b','d','d',
+'c','d','a','b','d','b',
+'c','c','b','b','b',
+'b','c','d','d','b',
+'c','d','d','d','d','d',
+'b','b','c','c','b','c','b'
+];
+
+// ===== TẠO DATA =====
+let data=[];
+for(let i=0;i<86;i++){
+data.push({
+q:"Câu "+(i+1),
+answer:answers[i],
+options:shuffle(['a','b','c','d'])
+});
+}
+
+// ===== RANDOM ĐÁP ÁN =====
+function shuffle(arr){return arr.sort(()=>Math.random()-0.5)}
+
+// ===== HIỂN THỊ =====
+const quiz=document.getElementById("quiz");
+
+data.forEach((item,index)=>{
+let div=document.createElement("div");
+div.className="card";
+
+div.innerHTML=`<b>${item.q}</b><br>`+
+item.options.map(o=>`<label><input type="radio" name="q${index}" value="${o}"> ${o.toUpperCase()}</label><br>`).join("");
+
+quiz.appendChild(div);
+});
+
+// ===== CHẤM =====
+function submitQuiz(){
+let score=0;
+
+data.forEach((item,index)=>{
+let s=document.querySelector(`input[name=q${index}]:checked`);
+let card=quiz.children[index];
+
+if(s){
+if(s.value===item.answer){
+score++;
+card.classList.add("correct");
+}else{
+card.classList.add("wrong");
+}
+}
+});
+
+result.innerText="Điểm: "+score+"/86";
+}
+
+// ===== XEM ĐÁP ÁN =====
+function showAnswers(){
+data.forEach((item,index)=>{
+let card=quiz.children[index];
+
+if(!card.querySelector(".ans")){
+let ans=document.createElement("div");
+ans.className="ans";
+ans.innerText="Đáp án: "+item.answer.toUpperCase();
+card.appendChild(ans);
+}
+});
+}
+
+// ===== CHỈ HIỆN CÂU SAI =====
+function showWrong(){
+data.forEach((item,index)=>{
+let s=document.querySelector(`input[name=q${index}]:checked`);
+let card=quiz.children[index];
+
+if(s && s.value===item.answer){
+card.style.display="none";
+}
+});
+}
+
+// ===== TIMER ĐẾM NGƯỢC =====
+let time=60*60;
+
+let t=setInterval(()=>{
+time--;
+let m=String(Math.floor(time/60)).padStart(2,'0');
+let s=String(time%60).padStart(2,'0');
+timer.innerText=m+":"+s;
+
+if(time<=0){
+clearInterval(t);
+submitQuiz();
+}
+},1000);
+
+</script>
+
+</body>
+</html>
